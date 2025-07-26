@@ -1,0 +1,75 @@
+paths:
+  /gemini-generate:
+    post:
+      security:
+        - apikeyAuth: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+
+  /gemini-generate-image:
+    post:
+      security:
+        - apikeyAuth: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+
+  /gemini-get-history:
+    post:
+      security:
+        - apikeyAuth: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+
+  /gemini-new-thread:
+    post:
+      security:
+        - apikeyAuth: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
+
+  /gemini-list-tools:
+    post:
+      security:
+        - apikeyAuth: []
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+      responses:
+        200:
+          description: Success
+          schema:
+            type: object
