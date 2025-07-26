@@ -1,0 +1,14 @@
+#wrap {
+  padding: 0 0 120px;
+}
+
+.fixed-bottom-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f8f8f8; /* 背景色 */
+    padding: 15px;
+    border-top: 1px solid #ddd; /* 境界線を追加 */
+    z-index: 1000; /* 他の要素より前面に */
+}

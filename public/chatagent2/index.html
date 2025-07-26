@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src * data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src * 'unsafe-inline'; media-src *; img-src * data: content: blob:;">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="viewport"
+    content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+    integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ"
+    crossorigin="anonymous"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css"
+    integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+    integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+    crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="css/start.css">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spinkit/2.0.1/spinkit.min.css" /> -->
+  <script src="js/methods_bootstrap.js"></script>
+  <script src="js/components_bootstrap.js"></script>
+  <script src="js/components_utils.js"></script>
+  <script src="js/vue_utils.js"></script>
+  <!-- <script src="js/gql_utils.js"></script> -->
+
+  <script src="js/remoteconsole.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vconsole/dist/vconsole.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuex@3.x/dist/vuex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue-router@3.x/dist/vue-router.min.js"></script>
+
+  <!-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script> -->
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.webmanifest" />
+  <script src="https://cdn.jsdelivr.net/npm/pwacompat" crossorigin="anonymous"></script></head>
+
+  <link rel="stylesheet" href="css/chatagent.css">
+
+  <title>AIチャットエージェント2</title>
+</head>
+
+<body>
+  <!--
+    <div id="loader-background">
+      <div class="sk-plane sk-center"></div>
+    </div>
+-->
+  <div id="top">
+    <div class="container">
+        <div id="wrap">
+          <div class="jumbotron">
+            <button class="btn btn-default btn-sm pull-right" v-on:click="apikey_config_open">APIキー</button>
+            <h2>AIチャットエージェント2</h2>
+          </div>
+
+          <button class="btn btn-default pull-right" v-on:click="show_tools">Tools</button>
+          <div class="form-inline">
+            <button class="btn btn-default" v-on:click="start_new_thread">新スレッド</button>
+            <select class="form-control" v-model="thread" v-on:change="select_thread">
+              <option value="">【現在のチャット】</option>
+              <option value="history">Detail/History</option>
+            </select>
+          </div>
+          <hr>
+
+          <div v-if="mode=='current'">
+            <div class="panel panel-default" v-for="(item, index) in message_list">
+              <div class="panel-heading text-right">
+                {{item.input}}
+              </div>
+              <div class="panel-body">
+                <center v-if="item.inProgress"><progress max="100" style="width: 50%;" /></center>
+                <p v-else style="white-space: pre-wrap;">{{item.output}}</p>
+              </div>
+            </div>
+          </div> 
+          <div v-else-if="mode=='thread'">
+            <span v-for="(item, index) in thread_message_list">
+              <div v-if="item.type=='text'" class="panel panel-default" >
+                <div class="panel-body">
+                  <label>text</label>
+                  <p style="white-space: pre-wrap;">{{item.text}}</p>
+                  <label>role</label> {{item.role}}
+                </div>
+              </div>
+              <div v-if="item.type=='func_call'" class="panel panel-danger">
+                <div class="panel-body">
+                  <label>functionCall</label> {{item.call.name}}
+                  <p style="white-space: pre-wrap;">{{item.call.args}}</p>
+                  <label>functionResponse</label> {{item.response.name}}
+                  <p style="white-space: pre-wrap;">{{item.response.content}}</p>
+                </div>
+              </div>
+            </span>
+          </div>
+        </div>
+
+        <div class="fixed-bottom-panel">
+          <div class="input-group">
+            <textarea type="text" class="form-control" rows="3" v-model="input_message" v-on:keydown.enter.exact.prevent="send_message"></textarea>
+            <span class="input-group-addon">
+              <button class="btn btn-default" v-on:click="send_message">送信</button>
+            </span>
+          </div>
+        </div>
+
+
+        <div class="modal fade" id="apikey_config_dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">APIキーの設定</h4>
+              </div>
+              <div class="modal-body">
+                <label>api_key</label>
+                <input type="text" class="form-control" v-model="input_apikey">
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" v-on:click="dialog_close('#apikey_config_dialog')">キャンセル</button>
+                <button class="btn btn-info" v-on:click="apikey_config_save">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="show_tools_dialog">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button class="btn btn-default btn-sm pull-right" data-dismiss="modal">Close</button>
+                <h4 class="modal-title">Tools</h4>
+              </div>
+              <div class="modal-body">
+                <dl v-for="(item, index) in tool_list">
+                  <dt>{{item.name}}</dt>
+                  <dd>{{item.description}}</dd>
+                </dl>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    <router-view></router-view>
+
+    <!-- for progress-dialog -->
+    <progress-dialog v-bind:title="progress_title"></progress-dialog>
+  </div>
+
+  <script src="js/store.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/start.js"></script>
+</body>
+
+</html>
